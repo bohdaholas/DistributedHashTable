@@ -6,12 +6,13 @@
 
 #include <ppconsul/agent.h>
 #include <ppconsul/kv.h>
+#include <grpcpp/create_channel.h>
 #include "dds.grpc.pb.h"
 #include "config_parser.h"
 
-class DDS_Controller {
+class DHT_Node {
 public:
-    DDS_Controller();
+    DHT_Node();
 
     void set_opt(config_options_t &opt);
     std::string get_id();
@@ -23,19 +24,13 @@ private:
     config_options_t* opt;
     ppconsul::Consul consul;
     ppconsul::agent::Agent agent;
-
-    class HealthCheckServiceImpl : public dds::HealthCheck::Service {
-        grpc::Status Check(grpc::ServerContext* context,
-                           const dds::HealthCheckRequest* request,
-                           dds::HealthCheckResponse* response) override {
-            return grpc::Status::OK;
-        }
-    };
+    std::unordered_map<std::string, int> map;
 
     class MapServiceImpl : public dds::MapService::Service {
     public:
         MapServiceImpl(const ppconsul::Consul &consul,
-                       const config_options_t &opt);
+                       const config_options_t &opt,
+                       std::unordered_map<std::string, int>& map);
 
         grpc::Status GetValue(grpc::ServerContext *context,
                              const dds::MapKey *request,
@@ -63,17 +58,43 @@ private:
     private:
         const ppconsul::Consul& consul;
         const config_options_t &opt;
-        std::unordered_map<std::string, int> map;
+        std::unordered_map<std::string, int>& map;
+    };
+
+    class HealthCheckServiceImpl : public dds::HealthCheck::Service {
+        grpc::Status Check(grpc::ServerContext* context,
+                           const dds::Void* request,
+                           dds::Void* response) override {
+            return grpc::Status::OK;
+        }
+    };
+
+    class RebalancingServiceImpl : public dds::RebalancingService::Service {
+    public:
+        RebalancingServiceImpl(const ppconsul::Consul &consul,
+                               const config_options_t &opt,
+                               std::unordered_map<std::string, int>& map);
+
+        grpc::Status Rebalancing(grpc::ServerContext *server_context,
+                                 const dds::RebalanceRequest *request,
+                                 dds::Map *response) override;
+
+    private:
+        const ppconsul::Consul& consul;
+        const config_options_t &opt;
+        std::unordered_map<std::string, int>& map;
     };
 
     class Server {
     public:
         Server(const ppconsul::Consul& consul,
-               const config_options_t &opt);
+               const config_options_t &opt,
+               std::unordered_map<std::string, int>& map);
         void run();
     private:
         const ppconsul::Consul &consul;
         const config_options_t &opt;
+        std::unordered_map<std::string, int>& map;
     };
 };
 

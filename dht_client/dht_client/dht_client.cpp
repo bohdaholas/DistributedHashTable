@@ -2,7 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 
 #include <iostream>
-#include "dds_client.h"
+#include "dht_client.h"
 
 using std::cout, std::endl;
 

@@ -30,5 +30,5 @@ include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 add_library(dds_grpc_proto ${dds_grpc_srcs} ${dds_grpc_hdrs} ${dds_proto_srcs} ${dds_proto_hdrs})
 target_link_libraries(dds_grpc_proto ${_REFLECTION} ${_GRPC_GRPCPP} ${_PROTOBUF_LIBPROTOBUF})
 
-add_subdirectory(dds)
-add_subdirectory(dds_client)
+add_subdirectory(dht)
+add_subdirectory(dht_client)

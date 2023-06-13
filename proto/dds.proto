@@ -36,10 +36,26 @@ service MapService {
 }
 
 // Consul healthcheck
-message HealthCheckRequest {}
-
-message HealthCheckResponse {}
 
 service HealthCheck {
-    rpc Check(HealthCheckRequest) returns (HealthCheckResponse) {}
+    rpc Check(Void) returns (Void) {}
 }
+
+// Rebalancing
+
+message RebalanceRequest {
+    int32 next_vnode_hash = 1;
+    int32 new_vnode_hash = 2;
+    int32 prev_vnode_hash = 3;
+}
+
+message Map {
+    map<string, int32> map = 1;
+}
+
+service RebalancingService {
+    rpc Rebalancing (RebalanceRequest) returns (Map) {}
+}
+
+
+

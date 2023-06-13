@@ -3,12 +3,12 @@
 
 #include <iostream>
 #include <csignal>
-#include "dds_controller.h"
+#include "dft_node.h"
 #include "config_parser.h"
 
 using std::cout, std::cerr, std::endl;
 
-static DDS_Controller dds_controller;
+static DHT_Node dds_controller;
 
 void handle_sigterm() {
     dds_controller.deregister_dds_instance();

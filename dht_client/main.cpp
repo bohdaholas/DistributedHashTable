@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <thread>
-#include "dds_client.h"
+#include "dht_client.h"
 #include "config_parser.h"
 
 using std::cout, std::cerr, std::endl;
@@ -14,37 +14,48 @@ void handle_sigterm() {
 }
 
 int main(int argc, char *argv[]) {
-//    std::string filename;
-//    if (argc == 1) {
-//        filename = "../config.cfg";
-//    } else if (argc == 2) {
-//        filename = argv[1];
-//    } else {
-//        cerr << "Wrong number of arguments" << endl;
-//        exit(EXIT_FAILURE);
-//    }
+    std::string filename;
+    if (argc == 1) {
+        filename = "../config.cfg";
+    } else if (argc == 2) {
+        filename = argv[1];
+    } else {
+        cerr << "Wrong number of arguments" << endl;
+        exit(EXIT_FAILURE);
+    }
 
-//    config_options_t opt{filename};
-    config_options_t opt{"../../config.cfg"};
+    config_options_t opt{filename};
     auto &dds_client = DDS_Client::get_instance(opt);
     auto map = dds_client.get_map();
-    for (size_t i = 0; i < 3; ++i) {
-        std::string key = "word" + std::to_string(i);
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-        cout << "Put " << i << endl;
-        map.put(key, (int) i);
-    }
-    cout << std::boolalpha << "Map empty:" << map.empty() << endl;
-    cout << "Map size:" << map.size() << endl;
-    map.remove("current 0 value");
-    cout << "Map size:" << map.size() << endl;
-    for (size_t i = 1; i < 3; ++i) {
+
+    cout << "********" << endl;
+    for (size_t i = 0; i <= 10; ++i) {
         std::string key = "word" + std::to_string(i);
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        cout << "Get " << map.get(key) << endl;
+        cout << "Put (" << key << ", " << i << ")" << endl;
+        map.put(key, static_cast<int>(i));
     }
+    cout << "********\n" << endl;
+
+    cout << "********" << endl;
+    cout << "Map size:" << map.size() << endl;
+    cout << "Remove key word0" << endl;
+    map.remove("word1");
+    cout << "Map size:" << map.size() << endl;
+    cout << "********\n" << endl;
+
+    cout << "********" << endl;
+    for (size_t i = 1; i <= 10; ++i) {
+        std::string key = "word" + std::to_string(i);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        cout << "Get " << key << ": " << i << endl;
+    }
+    cout << "********\n" << endl;
+
+    cout << "********" << endl;
     cout << "Map clear" << endl;
     map.clear();
     cout << std::boolalpha << "Map empty:" << map.empty() << endl;
     cout << "Map size:" << map.size() << endl;
+    cout << "********\n" << endl;
 }

@@ -1,0 +1,12 @@
+file(GLOB_RECURSE SOURCES
+        "dht_node/*.cpp" "config_parser/*.cpp"
+        "../utils/*.cpp" "main.cpp")
+add_executable(dht ${SOURCES})
+target_include_directories(dht PRIVATE
+        dht_node config_parser
+        ${Boost_INCLUDE_DIR} ../utils)
+target_link_libraries(dht PRIVATE
+        Boost::program_options Boost::system
+        Boost::thread ppconsul
+        dds_grpc_proto ${_REFLECTION}
+        ${_GRPC_GRPCPP} ${_PROTOBUF_LIBPROTOBUF})

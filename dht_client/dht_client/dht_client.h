@@ -7,7 +7,7 @@
 #include <ppconsul/agent.h>
 #include <random>
 #include "config_parser.h"
-#include "dds_map.h"
+#include "dht_map.h"
 
 class DDS_Client {
 public:
